@@ -161,10 +161,14 @@ public final class MimeTypes {
   // image/ MIME types
 
   public static final String IMAGE_JPEG = BASE_TYPE_IMAGE + "/jpeg";
+  @UnstableApi public static final String IMAGE_JPEG_R = BASE_TYPE_IMAGE + "/jpeg_r";
   @UnstableApi public static final String IMAGE_PNG = BASE_TYPE_IMAGE + "/png";
   @UnstableApi public static final String IMAGE_HEIF = BASE_TYPE_IMAGE + "/heif";
+  @UnstableApi public static final String IMAGE_HEIC = BASE_TYPE_IMAGE + "/heic";
+  @UnstableApi public static final String IMAGE_AVIF = BASE_TYPE_IMAGE + "/avif";
   @UnstableApi public static final String IMAGE_BMP = BASE_TYPE_IMAGE + "/bmp";
   @UnstableApi public static final String IMAGE_WEBP = BASE_TYPE_IMAGE + "/webp";
+  @UnstableApi public static final String IMAGE_RAW = BASE_TYPE_IMAGE + "/raw";
 
   /**
    * A non-standard codec string for E-AC3-JOC. Use of this constant allows for disambiguation
@@ -485,6 +489,29 @@ public final class MimeTypes {
   }
 
   /**
+   * Returns the MP4 object type identifier corresponding to a MIME type, as defined in RFC 6381 and
+   * <a href="https://mp4ra.org/registered-types/object-types">MPEG-4 Object Types</a>.
+   *
+   * @param sampleMimeType The MIME type of the track.
+   * @return The corresponding MP4 object type identifier, or {@code null} if it could not be
+   *     determined.
+   */
+  @UnstableApi
+  @Nullable
+  public static Byte getMp4ObjectTypeFromMimeType(String sampleMimeType) {
+    switch (sampleMimeType) {
+      case MimeTypes.AUDIO_AAC:
+        return (byte) 0x40;
+      case MimeTypes.AUDIO_VORBIS:
+        return (byte) 0xDD;
+      case MimeTypes.VIDEO_MP4V:
+        return (byte) 0x20;
+      default:
+        return null;
+    }
+  }
+
+  /**
    * Returns the MIME type corresponding to an MP4 object type identifier, as defined in RFC 6381
    * and https://mp4ra.org/#/object_types.
    *
@@ -513,6 +540,8 @@ public final class MimeTypes {
       case 0x69:
       case 0x6B:
         return MimeTypes.AUDIO_MPEG;
+      case 0x6C:
+        return MimeTypes.IMAGE_JPEG;
       case 0xA3:
         return MimeTypes.VIDEO_VC1;
       case 0xB1:

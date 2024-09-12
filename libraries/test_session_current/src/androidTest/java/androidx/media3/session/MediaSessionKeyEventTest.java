@@ -101,7 +101,9 @@ public class MediaSessionKeyEventTest {
       handler.postAndSync(
           () -> {
             player.notifyPlayWhenReadyChanged(
-                /* playWhenReady= */ true, Player.PLAYBACK_SUPPRESSION_REASON_NONE);
+                /* playWhenReady= */ true,
+                Player.PLAY_WHEN_READY_CHANGE_REASON_USER_REQUEST,
+                Player.PLAYBACK_SUPPRESSION_REASON_NONE);
             player.notifyPlaybackStateChanged(Player.STATE_READY);
           });
     } else {
@@ -340,6 +342,20 @@ public class MediaSessionKeyEventTest {
         });
 
     dispatchMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE, /* doubleTap= */ true);
+
+    player.awaitMethodCalled(MockPlayer.METHOD_SEEK_TO_NEXT, TIMEOUT_MS);
+  }
+
+  @Test
+  public void playPauseKeyEvent_doubleTapOnHeadsetHook_seekNext() throws Exception {
+    Assume.assumeTrue(Util.SDK_INT >= 21); // TODO: b/199064299 - Lower minSdk to 19.
+    handler.postAndSync(
+        () -> {
+          player.playWhenReady = true;
+          player.playbackState = Player.STATE_READY;
+        });
+
+    dispatchMediaKeyEvent(KeyEvent.KEYCODE_HEADSETHOOK, /* doubleTap= */ true);
 
     player.awaitMethodCalled(MockPlayer.METHOD_SEEK_TO_NEXT, TIMEOUT_MS);
   }
